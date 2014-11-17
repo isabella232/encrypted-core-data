@@ -5,6 +5,8 @@ before_install:
     - if brew outdated | grep -qx xctool; then brew upgrade xctool; fi
 
 script:
+    - git submodule init
+    - git submodule update
     - cd "exampleProjects/IncrementalStore"
     # 32-bit tests
     - xctool -sdk iphonesimulator -scheme "Incremental Store Demo" clean test -destination "name=iPhone Retina (4-inch)"
