@@ -1,16 +1,15 @@
 language: objective-c
 
+# fixes outdated xctool issue
 before_install:
     - brew update
     - if brew outdated | grep -qx xctool; then brew upgrade xctool; fi
 
 script:
     - cd "exampleProjects/IncrementalStore"
-    - gcc -v
-    - ld -v
-    - clang -v
     # 32-bit tests
     - xctool -sdk iphonesimulator -scheme "Incremental Store Demo" clean test -destination "name=iPhone Retina (4-inch)"
+    - cat config.log
     # 64-bit tests
     - xctool -sdk iphonesimulator -scheme "Incremental Store Demo" clean test -destination "name=iPhone Retina (4-inch 64-bit)"
 
