@@ -246,7 +246,7 @@ static NSString * const EncryptedStoreMetadataTableName = @"meta";
         NSEntityDescription *entity = [fetchRequest entity];
         NSFetchRequestResultType type = [fetchRequest resultType];
         NSMutableArray *results = [NSMutableArray array];
-        NSString * joinStatement = [self getJoinClause:fetchRequest withPredicate:[fetchRequest predicate] initial:YES];
+        NSString * joinStatement = [self getJoinStatementUnique:[self getJoinClause:fetchRequest withPredicate:[fetchRequest predicate] initial:YES]];
         
         NSString *table = [self tableNameForEntity:entity];
         NSDictionary *condition = [self whereClauseWithFetchRequest:fetchRequest];
@@ -1785,6 +1785,25 @@ static void dbsqliteRegExp(sqlite3_context *context, int argc, const char **argv
                  [columns componentsJoinedByString:@", "]];
     }
     return @{ @"order": order };
+}
+
+- (NSString *) getJoinStatementUnique:(NSString *)joinStatements {
+    
+    NSArray * joinStatementsArray = [[NSString stringWithFormat:@"%@ ", joinStatements] componentsSeparatedByString:@"LEFT OUTER JOIN "];
+
+    // removing duplicate statements from the joinStatementsArray
+    NSMutableArray * joinStatementsArrayUnique = [[NSMutableArray alloc] init];
+    for (NSString * statmentItem in joinStatementsArray) {
+        if (![joinStatementsArrayUnique containsObject:statmentItem]) {
+            [joinStatementsArrayUnique addObject:statmentItem];
+        }
+    }
+    
+    if (joinStatementsArrayUnique.count > 0) {
+        return [joinStatementsArrayUnique componentsJoinedByString:@"LEFT OUTER JOIN "];
+    }
+    
+    return @"";
 }
 
 - (NSString *) getJoinClause: (NSFetchRequest *) fetchRequest withPredicate:(NSPredicate*)predicate initial:(BOOL)initial{
